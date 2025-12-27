@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Public Wall</title>
+</head>
+<body>
+
+<h2>Public Wall</h2>
+
+<!-- LOGIN / SIGNUP -->
+<div id="auth">
+  <input id="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
+  <br><br>
+  <button id="signupBtn">Sign Up</button>
+  <button id="loginBtn">Login</button>
+</div>
+
+<!-- APP (shown after login) -->
+<div id="app" style="display:none;">
+  <br>
+  <textarea id="postContent" placeholder="Write something..." rows="4" cols="40"></textarea>
+  <br><br>
+  <button id="postBtn">Post</button>
+  <button id="logoutBtn">Logout</button>
+</div>
+
+<!-- POSTS -->
+<ul id="posts"></ul>
+
+<!-- SCRIPTS -->
+<!-- NOTE: @2 is required so we load Supabase JS v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
