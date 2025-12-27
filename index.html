@@ -4,34 +4,122 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Public Wall</title>
+  
+  <!-- CSS STYLES -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      padding-top: 50px;
+    }
+
+    /* Main App Container */
+    #app-container {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    h2 { text-align: center; color: #333; }
+
+    /* Inputs and Buttons */
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box; /* Keeps padding from breaking width */
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      background-color: #3b82f6; /* Blue */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover { background-color: #2563eb; }
+    
+    #logoutBtn { background-color: #ef4444; margin-top: 10px;}
+    #logoutBtn:hover { background-color: #dc2626; }
+
+    /* Post List */
+    #posts {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .post-card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .post-header {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .post-username {
+      font-weight: bold;
+      color: #3b82f6;
+    }
+
+    .post-content {
+      font-size: 18px;
+      color: #222;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Public Wall</h2>
+<div id="app-container">
+  <h2>Public Wall</h2>
 
-<!-- LOGIN / SIGNUP -->
-<div id="auth">
-  <input id="email" placeholder="Email" />
-  <input id="password" type="password" placeholder="Password" />
-  <br><br>
-  <button id="signupBtn">Sign Up</button>
-  <button id="loginBtn">Login</button>
+  <!-- LOGIN / SIGNUP -->
+  <div id="auth">
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <br>
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <!-- APP (shown after login) -->
+  <div id="app" style="display:none;">
+    
+    <!-- Username Input -->
+    <input id="username" placeholder="Your Display Name (e.g. CoolDude)" />
+
+    <textarea id="postContent" placeholder="Write something..." rows="3"></textarea>
+    
+    <button id="postBtn">Post Message</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- POSTS -->
+  <ul id="posts"></ul>
 </div>
-
-<!-- APP (shown after login) -->
-<div id="app" style="display:none;">
-  <br>
-  <textarea id="postContent" placeholder="Write something..." rows="4" cols="40"></textarea>
-  <br><br>
-  <button id="postBtn">Post</button>
-  <button id="logoutBtn">Logout</button>
-</div>
-
-<!-- POSTS -->
-<ul id="posts"></ul>
 
 <!-- SCRIPTS -->
-<!-- NOTE: @2 is required so we load Supabase JS v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 
