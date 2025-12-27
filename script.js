@@ -15,7 +15,10 @@ const authDiv = document.getElementById('auth');
 const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
 
-// Load saved username from browser memory
+// Variable to store the current user's ID (so we don't notify ourselves)
+let currentUserId = null;
+
+// Load saved username
 if(localStorage.getItem('wall_username')) {
   usernameInput.value = localStorage.getItem('wall_username');
 }
@@ -41,7 +44,10 @@ async function login() {
     password: password.value
   });
   if (error) alert("Login error: " + error.message);
-  else await checkUser();
+  else {
+    await checkUser();
+    enableNotifications(); // Ask for permission on login
+  }
 }
 
 async function logout() {
@@ -52,8 +58,36 @@ async function logout() {
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   if (data && data.user) {
+    currentUserId = data.user.id; // Save ID
     authDiv.style.display = 'none';
     appDiv.style.display = 'block';
+  }
+}
+
+/* NOTIFICATION PERMISSION */
+function enableNotifications() {
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+}
+
+function sendNotification(post) {
+  // Check if we have permission
+  if (Notification.permission === "granted") {
+    const title = `@${post.username} says:`;
+    const body = post.content;
+    
+    // Create the popup
+    const notification = new Notification(title, {
+      body: body,
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Infobox_info_icon.svg' // A generic icon
+    });
+
+    // Click notification to focus the tab
+    notification.onclick = function() {
+      window.focus();
+      notification.close();
+    };
   }
 }
 
@@ -65,7 +99,6 @@ async function addPost() {
   const username = usernameInput.value.trim();
   if (!username) return alert("Please enter a display name.");
 
-  // Save username to browser memory
   localStorage.setItem('wall_username', username);
 
   const { error } = await supabaseClient
@@ -83,7 +116,7 @@ async function addPost() {
   }
 }
 
-/* DISPLAY LOGIC (Side-by-Side Layout) */
+/* DISPLAY LOGIC */
 async function loadPosts() {
   const { data, error } = await supabaseClient
     .from('posts')
@@ -100,7 +133,6 @@ async function loadPosts() {
     const name = post.username || "Anonymous";
     const date = new Date(post.created_at).toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
 
-    // Compact Layout: Username left, Content right
     li.innerHTML = `
       <div class="post-username">@${name}</div>
       <div class="post-content">
@@ -116,8 +148,17 @@ async function loadPosts() {
 function subscribeToPosts() {
   supabaseClient
     .channel('public:posts')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
+      
+      const newPost = payload.new;
+
+      // 1. Update the UI list
       loadPosts();
+
+      // 2. Send Notification (BUT only if it's NOT me)
+      if (newPost.user_id !== currentUserId) {
+        sendNotification(newPost);
+      }
     })
     .subscribe();
 }
