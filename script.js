@@ -65,7 +65,7 @@ async function addPost() {
   const username = usernameInput.value.trim();
   if (!username) return alert("Please enter a display name.");
 
-  // Save username to browser memory so we don't lose it
+  // Save username to browser memory
   localStorage.setItem('wall_username', username);
 
   const { error } = await supabaseClient
@@ -83,7 +83,7 @@ async function addPost() {
   }
 }
 
-/* DISPLAY LOGIC */
+/* DISPLAY LOGIC (Side-by-Side Layout) */
 async function loadPosts() {
   const { data, error } = await supabaseClient
     .from('posts')
@@ -98,14 +98,15 @@ async function loadPosts() {
     li.className = 'post-card';
     
     const name = post.username || "Anonymous";
-    const date = new Date(post.created_at).toLocaleString();
+    const date = new Date(post.created_at).toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
 
+    // Compact Layout: Username left, Content right
     li.innerHTML = `
-      <div class="post-header">
-        <span class="post-username">@${name}</span>
-        <span>${date}</span>
+      <div class="post-username">@${name}</div>
+      <div class="post-content">
+        ${post.content}
+        <span class="post-date">— ${date}</span>
       </div>
-      <div class="post-content">${post.content}</div>
     `;
     postsList.appendChild(li);
   });
