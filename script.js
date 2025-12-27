@@ -1,5 +1,7 @@
+// ---- YOUR SUPABASE CREDENTIALS ----
 const SUPABASE_URL = "https://doenhxnmmvlgkpjkznlq.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZW5oeG5tbXZsZ2twamt6bmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjMzODgsImV4cCI6MjA4MjMzOTM4OH0.237Xb6373cDOJP8PrZ7lXmVs0BchktD9f7Z0YMbXNdg";
+// -----------------------------------
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -10,10 +12,10 @@ const password = document.getElementById('password');
 const usernameInput = document.getElementById('username');
 const postContent = document.getElementById('postContent');
 const authDiv = document.getElementById('auth');
-const inputArea = document.getElementById('input-area');
+const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
 
-// Load saved username
+// Load saved username from browser memory
 if(localStorage.getItem('wall_username')) {
   usernameInput.value = localStorage.getItem('wall_username');
 }
@@ -29,8 +31,8 @@ async function signup() {
     email: email.value,
     password: password.value
   });
-  if (error) alert(error.message);
-  else alert("Check your email to confirm!");
+  if (error) alert("Signup error: " + error.message);
+  else alert("Signup successful! Check email.");
 }
 
 async function login() {
@@ -38,8 +40,8 @@ async function login() {
     email: email.value,
     password: password.value
   });
-  if (error) alert(error.message);
-  else checkUser();
+  if (error) alert("Login error: " + error.message);
+  else await checkUser();
 }
 
 async function logout() {
@@ -51,72 +53,59 @@ async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   if (data && data.user) {
     authDiv.style.display = 'none';
-    inputArea.style.display = 'block';
+    appDiv.style.display = 'block';
+  }
+}
+
+/* POST LOGIC */
+async function addPost() {
+  const { data } = await supabaseClient.auth.getUser();
+  if (!data || !data.user) return alert("Please login first.");
+
+  const username = usernameInput.value.trim();
+  if (!username) return alert("Please enter a display name.");
+
+  // Save username to browser memory
+  localStorage.setItem('wall_username', username);
+
+  const { error } = await supabaseClient
+    .from('posts')
+    .insert({
+      content: postContent.value,
+      username: username,
+      user_id: data.user.id
+    });
+
+  if (error) alert("Insert error: " + error.message);
+  else {
+    postContent.value = '';
     loadPosts();
   }
 }
 
-/* HELPER: Get consistent color for username */
-function getAvatarColor(username) {
-  const colors = [
-    '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', 
-    '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e'
-  ];
-  let hash = 0;
-  for (let i = 0; i < username.length; i++) {
-    hash = username.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
-}
-
-/* ADD POST */
-async function addPost() {
-  const { data } = await supabaseClient.auth.getUser();
-  if (!data || !data.user) return alert("Login first.");
-
-  const username = usernameInput.value.trim();
-  if (!username) return alert("Enter a name.");
-
-  localStorage.setItem('wall_username', username);
-
-  const { error } = await supabaseClient.from('posts').insert({
-    content: postContent.value,
-    username: username,
-    user_id: data.user.id
-  });
-
-  if (error) alert(error.message);
-  else {
-    postContent.value = '';
-  }
-}
-
-/* LOAD POSTS */
+/* DISPLAY LOGIC (Side-by-Side Layout) */
 async function loadPosts() {
   const { data, error } = await supabaseClient
     .from('posts')
-    .select('*')
+    .select('id, content, username, created_at')
     .order('created_at', { ascending: false });
 
   if (error) return console.error(error);
 
   postsList.innerHTML = '';
   data.forEach(post => {
-    const name = post.username || "Anon";
-    const initial = name.charAt(0).toUpperCase();
-    const color = getAvatarColor(name);
-    const time = new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
     const li = document.createElement('li');
     li.className = 'post-card';
     
-    // The Polished Layout
+    const name = post.username || "Anonymous";
+    const date = new Date(post.created_at).toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
+
+    // Compact Layout: Username left, Content right
     li.innerHTML = `
-      <div class="avatar" style="background-color: ${color}">${initial}</div>
-      <div class="post-bubble">
-        <div class="post-header">@${name} · ${time}</div>
-        <div class="post-content">${post.content}</div>
+      <div class="post-username">@${name}</div>
+      <div class="post-content">
+        ${post.content}
+        <span class="post-date">— ${date}</span>
       </div>
     `;
     postsList.appendChild(li);
@@ -125,7 +114,8 @@ async function loadPosts() {
 
 /* REALTIME */
 function subscribeToPosts() {
-  supabaseClient.channel('public:posts')
+  supabaseClient
+    .channel('public:posts')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
       loadPosts();
     })
@@ -133,5 +123,6 @@ function subscribeToPosts() {
 }
 
 /* START */
+loadPosts();
 checkUser();
 subscribeToPosts();
