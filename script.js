@@ -1,10 +1,10 @@
 // quick evidence that the file loaded
 console.log("script.js loaded");
 
-// ---- YOUR SUPABASE CREDENTIALS ARE LOADED BELOW ----
+// ---- YOUR SUPABASE CREDENTIALS ----
 const SUPABASE_URL = "https://doenhxnmmvlgkpjkznlq.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZW5oeG5tbXZsZ2twamt6bmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjMzODgsImV4cCI6MjA4MjMzOTM4OH0.237Xb6373cDOJP8PrZ7lXmVs0BchktD9f7Z0YMbXNdg";
-// ----------------------------------------------------
+// -----------------------------------
 
 /* Supabase v2 client setup */
 const { createClient } = supabase;
@@ -115,6 +115,18 @@ async function loadPosts() {
   });
 }
 
-/* initial */
+/* REALTIME SUBSCRIPTION */
+function subscribeToPosts() {
+  supabaseClient
+    .channel('public:posts')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
+      console.log('New post received!', payload);
+      loadPosts(); // Reload the list automatically
+    })
+    .subscribe();
+}
+
+/* INITIAL SETUP */
 loadPosts();
 checkUser();
+subscribeToPosts(); // <--- This starts the listener
