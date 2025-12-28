@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- CSS STYLES (RESPONSIVE DARK MODE) -->
+  <!-- CSS STYLES -->
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -24,11 +24,10 @@
       padding-bottom: 40px;
     }
 
-    /* Scrollbar Styling */
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
     #app-container {
       width: 100%;
@@ -36,7 +35,6 @@
       padding: 20px;
     }
 
-    /* Title with Gradient Text */
     h2 {
       text-align: center;
       font-weight: 800;
@@ -70,9 +68,7 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
-    input::placeholder, textarea::placeholder {
-      color: #94a3b8;
-    }
+    input::placeholder, textarea::placeholder { color: #94a3b8; }
 
     /* Buttons */
     button {
@@ -111,7 +107,7 @@
       margin-top: 20px;
     }
 
-    /* GLASS CARD STYLE */
+    /* CARD WITH ANIMATION */
     .post-card {
       background: rgba(30, 41, 59, 0.6);
       backdrop-filter: blur(12px);
@@ -124,6 +120,15 @@
       align-items: flex-start;
       gap: 15px;
       transition: 0.2s;
+      
+      /* SLIDE IN ANIMATION */
+      animation: slideIn 0.4s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .post-card:hover {
@@ -156,15 +161,43 @@
       font-weight: 400;
     }
 
-    /* DESKTOP SPECIFIC TWEAKS */
-    @media (min-width: 768px) {
-      #app-container {
-        padding: 40px;
-      }
+    /* TOAST NOTIFICATION STYLES */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
+
+    .toast {
+      background: rgba(30, 41, 59, 0.95);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border-left: 4px solid #60a5fa;
+      font-size: 14px;
+      animation: toastIn 0.3s ease-out;
+      min-width: 250px;
+    }
+    
+    .toast.error { border-left-color: #ef4444; }
+    .toast.success { border-left-color: #22c55e; }
+
+    @keyframes toastIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (min-width: 768px) { #app-container { padding: 40px; } }
   </style>
 </head>
 <body>
+
+<div id="toast-container"></div>
 
 <div id="app-container">
   <h2>Public Wall</h2>
