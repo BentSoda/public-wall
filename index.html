@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Public Wall</title>
+  
+  <!-- MODERN FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
   <!-- CSS STYLES (RESPONSIVE DARK MODE) -->
   <style>
     body {
@@ -20,15 +32,15 @@
 
     #app-container {
       width: 100%;
-      max-width: 1000px; /* <--- Increased from 500px to 1000px */
-      padding: 20px;      /* Mobile padding */
+      max-width: 1000px;
+      padding: 20px;
     }
 
     /* Title with Gradient Text */
     h2 {
       text-align: center;
       font-weight: 800;
-      font-size: 2.5rem; /* Slightly larger title for desktop */
+      font-size: 2.5rem;
       margin-bottom: 30px;
       background: linear-gradient(to right, #60a5fa, #c084fc);
       -webkit-background-clip: text;
@@ -104,13 +116,13 @@
       background: rgba(30, 41, 59, 0.6);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 20px; /* More padding inside cards for desktop */
+      padding: 20px;
       margin-bottom: 15px;
       border-radius: 16px;
       display: flex;
       flex-direction: row; 
       align-items: flex-start;
-      gap: 15px; /* More gap between name and text */
+      gap: 15px;
       transition: 0.2s;
     }
 
@@ -124,7 +136,7 @@
       font-weight: 700;
       color: #60a5fa;
       white-space: nowrap;
-      min-width: 100px; /* Slightly wider name column */
+      min-width: 100px;
       text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
       font-size: 17px;
     }
@@ -133,7 +145,7 @@
       flex-grow: 1;
       color: #f1f5f9;
       word-wrap: break-word;
-      font-size: 16px; /* Slightly larger font for desktop readability */
+      font-size: 16px;
       line-height: 1.6;
     }
 
@@ -147,7 +159,41 @@
     /* DESKTOP SPECIFIC TWEAKS */
     @media (min-width: 768px) {
       #app-container {
-        padding: 40px; /* More breathing room on sides for desktop */
+        padding: 40px;
       }
     }
   </style>
+</head>
+<body>
+
+<div id="app-container">
+  <h2>Public Wall</h2>
+
+  <!-- LOGIN / SIGNUP -->
+  <div id="auth">
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <br>
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <!-- APP -->
+  <div id="app" style="display:none;">
+    <input id="username" placeholder="Display Name" />
+    <textarea id="postContent" placeholder="What's on your mind?" rows="3"></textarea>
+    
+    <button id="postBtn">Post Message</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- POSTS -->
+  <ul id="posts"></ul>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
