@@ -5,175 +5,124 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Public Wall</title>
   
-  <!-- PREMIUM FONT: Inter -->
+  <!-- MODERN FONT: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      /* DESIGN TOKENS */
-      --bg-body: #09090b;      /* Deepest Black */
-      --bg-card: #18181b;      /* Dark Slate */
-      --bg-input: #09090b;     /* Transparent Inputs */
-      --border: #27272a;       /* Subtle Borders */
-      --text-main: #fafafa;    /* White-ish */
-      --text-muted: #a1a1aa;   /* Muted Grey */
-      --accent: #3b82f6;       /* Professional Blue */
-      --accent-glow: rgba(59, 130, 246, 0.15);
-      --danger: #ef4444;
-      --radius: 12px;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --font: 'Inter', sans-serif;
-    }
-
-    * { box-sizing: border-box; outline: none; }
+    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 
     body {
-      font-family: var(--font);
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      min-height: 100vh;
+      font-family: 'Outfit', sans-serif;
       margin: 0;
-      padding: 40px 20px;
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+      /* PREMIUM MESH GRADIENT BACKGROUND */
+      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
       display: flex;
       justify-content: center;
-      /* Subtle vignette effect */
-      background-image: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
+      padding: 40px 20px;
     }
 
-    /* LAYOUT CONTAINER */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* MAIN CONTAINER */
     #app-container {
       width: 100%;
-      max-width: 680px; /* Optimal reading width */
+      max-width: 600px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 30px;
     }
 
-    /* HEADER */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+    /* GLASS CARD STYLE */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
 
     h1 {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 0;
-      letter-spacing: -0.5px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .logo-dot {
-      width: 10px;
-      height: 10px;
-      background-color: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent);
+      text-align: center;
+      font-weight: 800;
+      font-size: 2.5rem;
+      margin: 0 0 20px 0;
+      background: linear-gradient(to right, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -1px;
     }
 
-    /* CARDS (Shared Class) */
-    .card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-      transition: border-color 0.2s;
-    }
-
-    /* INPUTS */
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
+    /* INPUTS (Ghost Style) */
     input, textarea {
       width: 100%;
-      background-color: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 16px;
-      color: var(--text-main);
-      font-size: 15px;
-      font-family: var(--font);
-      transition: all 0.2s ease;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      color: white;
+      font-size: 16px;
+      font-family: 'Outfit', sans-serif;
+      margin-bottom: 16px;
+      transition: 0.3s;
     }
 
     input:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px var(--accent-glow);
-    }
-
-    textarea {
-      resize: none;
-      min-height: 100px;
+      background: rgba(0, 0, 0, 0.4);
+      border-color: #a78bfa;
+      box-shadow: 0 0 15px rgba(167, 139, 250, 0.2);
     }
 
     /* BUTTONS */
     button {
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 16px;
+      border-radius: 12px;
       border: none;
-      font-weight: 600;
-      font-size: 15px;
+      font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: var(--font);
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: 'Outfit', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    .btn-primary {
-      background-color: var(--accent);
+    .btn-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-    
-    .btn-primary:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-    
-    .btn-primary:active {
-      transform: translateY(0);
+      box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
     }
 
-    /* Disabled State for Professional feel */
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
     }
 
-    .btn-secondary {
-      background-color: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-      background-color: #27272a;
-      color: var(--text-main);
-    }
-
-    .btn-logout {
+    .btn-ghost {
       background: transparent;
-      color: var(--text-muted);
-      border: none;
-      width: auto;
-      padding: 8px 12px;
-      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 10px;
     }
-    .btn-logout:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
+    
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
 
-    /* FEED LAYOUT */
+    /* POST LIST */
     #posts {
       list-style: none;
       padding: 0;
@@ -183,109 +132,87 @@
       gap: 16px;
     }
 
-    .post-item {
+    .post-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
       display: grid;
-      grid-template-columns: 40px 1fr; /* Avatar | Content */
+      grid-template-columns: 44px 1fr;
       gap: 16px;
-      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: slideIn 0.4s ease-out;
+      transition: transform 0.2s;
+    }
+
+    .post-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      transform: translateY(-2px);
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     /* AVATAR */
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #27272a;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--text-main);
-      border: 1px solid var(--border);
+      font-weight: 800;
+      font-size: 18px;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    /* POST META */
-    .post-meta {
+    /* POST CONTENT */
+    .post-header {
       display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 4px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
     }
 
     .post-user {
-      font-weight: 600;
-      color: var(--text-main);
+      font-weight: 700;
+      color: #f3e8ff;
       font-size: 15px;
     }
 
     .post-time {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
     }
 
     .post-body {
       font-size: 15px;
-      color: #d4d4d8; /* Slightly dimmed for readability */
+      color: rgba(255,255,255,0.8);
       line-height: 1.5;
       white-space: pre-wrap;
     }
 
-    /* TOASTS (Minimalist) */
+    /* TOASTS */
     #toast-container {
       position: fixed;
-      top: 24px;
-      right: 24px;
+      top: 20px;
+      right: 20px;
       z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
-
     .toast {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 14px 20px;
-      border-radius: 8px;
-      box-shadow: var(--shadow-md);
+      background: rgba(15, 23, 42, 0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
       font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      min-width: 250px;
-    }
-    
-    .toast::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: var(--accent);
-    }
-    .toast.success::before { background-color: #22c55e; }
-    .toast.error::before { background-color: var(--danger); }
-
-    @keyframes toastSlide {
-      from { transform: translateX(20px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* UTILS */
-    .hidden { display: none !important; }
-    .auth-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
-    
-    @media (max-width: 600px) {
-      #toast-container { right: 20px; left: 20px; width: auto; }
-      .toast { width: 100%; }
+      animation: slideIn 0.3s ease;
     }
   </style>
 </head>
@@ -295,43 +222,28 @@
 
 <div id="app-container">
   
-  <header>
-    <h1><div class="logo-dot"></div>Public Wall</h1>
-    <!-- Logout button only visible in app -->
-    <button id="logoutHeaderBtn" class="btn-logout hidden">Logout</button>
-  </header>
+  <h1>Public Wall</h1>
 
-  <!-- LOGIN CARD -->
-  <div id="auth" class="card">
-    <div class="input-group">
-      <input id="email" placeholder="Email address" type="email" autocomplete="email" />
-      <input id="password" placeholder="Password" type="password" />
-    </div>
-    <div class="auth-buttons">
-      <button id="signupBtn" class="btn-primary">Create Account</button>
-      <button id="loginBtn" class="btn-secondary">Log In</button>
-    </div>
+  <!-- LOGIN SECTION -->
+  <div id="auth" class="glass-panel">
+    <input id="email" placeholder="Email Address" type="email" />
+    <input id="password" placeholder="Password" type="password" />
+    <button id="signupBtn" class="btn-gradient">Sign Up</button>
+    <button id="loginBtn" class="btn-ghost">Login</button>
   </div>
 
-  <!-- APP CARD -->
-  <div id="app" class="hidden" style="display: none;">
+  <!-- MAIN APP SECTION -->
+  <div id="app" class="glass-panel" style="display:none;">
+    <input id="username" placeholder="Display Name" />
+    <textarea id="postContent" placeholder="Share your thoughts..." rows="3"></textarea>
     
-    <!-- Composer Card -->
-    <div class="card">
-      <div class="input-group">
-        <input id="username" placeholder="Display Name" type="text" autocomplete="off" />
-        <textarea id="postContent" placeholder="What's happening?" maxlength="280"></textarea>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
-        <span id="charCount" style="font-size: 12px; color: var(--text-muted);">0/280</span>
-        <button id="postBtn" class="btn-primary" disabled style="width: auto; padding-left: 24px; padding-right: 24px;">Post</button>
-      </div>
-    </div>
-
-    <!-- Feed -->
-    <ul id="posts"></ul>
-
+    <button id="postBtn" class="btn-gradient">Post Message</button>
+    <button id="logoutBtn" class="btn-ghost">Logout</button>
   </div>
+
+  <!-- FEED -->
+  <ul id="posts"></ul>
+
 </div>
 
 <!-- SCRIPTS -->
