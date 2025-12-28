@@ -25,7 +25,7 @@ document.getElementById('loginBtn').onclick = login;
 document.getElementById('logoutBtn').onclick = logout;
 document.getElementById('postBtn').onclick = addPost;
 
-/* TOAST NOTIFICATION FUNCTION */
+/* TOAST NOTIFICATION */
 function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
@@ -34,28 +34,31 @@ function showToast(message, type = 'info') {
   
   container.appendChild(toast);
   
-  // Remove after 3 seconds
   setTimeout(() => {
     toast.style.opacity = '0';
+    toast.style.transform = 'scale(0.8)';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
 
-/* AUTH FUNCTIONS */
+/* AVATAR COLOR GENERATOR */
+function getAvatarColor(username) {
+  const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e'];
+  let hash = 0;
+  for (let i = 0; i < username.length; i++) hash = username.charCodeAt(i) + ((hash << 5) - hash);
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+}
+
+/* AUTH */
 async function signup() {
-  const { error } = await supabaseClient.auth.signUp({
-    email: email.value,
-    password: password.value
-  });
+  const { error } = await supabaseClient.auth.signUp({ email: email.value, password: password.value });
   if (error) showToast(error.message, 'error');
   else showToast("Success! Check your email.", 'success');
 }
 
 async function login() {
-  const { error } = await supabaseClient.auth.signInWithPassword({
-    email: email.value,
-    password: password.value
-  });
+  const { error } = await supabaseClient.auth.signInWithPassword({ email: email.value, password: password.value });
   if (error) showToast(error.message, 'error');
   else {
     await checkUser();
@@ -102,7 +105,7 @@ async function addPost() {
   }
 }
 
-/* DISPLAY LOGIC */
+/* DISPLAY LOGIC (With Avatars) */
 async function loadPosts() {
   const { data, error } = await supabaseClient
     .from('posts')
@@ -117,13 +120,18 @@ async function loadPosts() {
     li.className = 'post-card';
     
     const name = post.username || "Anonymous";
+    const initials = name.charAt(0).toUpperCase();
+    const color = getAvatarColor(name);
     const date = new Date(post.created_at).toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
 
     li.innerHTML = `
-      <div class="post-username">@${name}</div>
-      <div class="post-content">
-        ${post.content}
-        <span class="post-date">— ${date}</span>
+      <div class="avatar" style="background-color: ${color};">${initials}</div>
+      <div>
+        <div class="post-header">
+          <span class="post-username">@${name}</span>
+          <span class="post-date">${date}</span>
+        </div>
+        <div class="post-content">${post.content}</div>
       </div>
     `;
     postsList.appendChild(li);
