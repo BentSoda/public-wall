@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Public Wall</title>
-  
-  <!-- MODERN FONT -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <!-- CSS STYLES (DARK & COOL) -->
+  <!-- CSS STYLES (RESPONSIVE DARK MODE) -->
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      /* Dark Blue-Purple Gradient Background */
       background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-      color: #e2e8f0; /* Light text */
+      color: #e2e8f0;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -26,21 +13,22 @@
     }
 
     /* Scrollbar Styling */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
     #app-container {
       width: 100%;
-      max-width: 500px;
-      padding: 20px;
+      max-width: 1000px; /* <--- Increased from 500px to 1000px */
+      padding: 20px;      /* Mobile padding */
     }
 
     /* Title with Gradient Text */
     h2 {
       text-align: center;
       font-weight: 800;
-      font-size: 2rem;
+      font-size: 2.5rem; /* Slightly larger title for desktop */
       margin-bottom: 30px;
       background: linear-gradient(to right, #60a5fa, #c084fc);
       -webkit-background-clip: text;
@@ -48,7 +36,7 @@
       letter-spacing: -1px;
     }
 
-    /* Glassmorphism Inputs */
+    /* Inputs */
     input, textarea {
       width: 100%;
       padding: 14px;
@@ -71,10 +59,10 @@
     }
 
     input::placeholder, textarea::placeholder {
-      color: #94a3b8; /* Gray placeholders */
+      color: #94a3b8;
     }
 
-    /* Gradient Buttons */
+    /* Buttons */
     button {
       width: 100%;
       padding: 14px;
@@ -113,16 +101,16 @@
 
     /* GLASS CARD STYLE */
     .post-card {
-      background: rgba(30, 41, 59, 0.6); /* Translucent dark */
-      backdrop-filter: blur(12px); /* Frosted glass effect */
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 16px;
-      margin-bottom: 12px;
+      padding: 20px; /* More padding inside cards for desktop */
+      margin-bottom: 15px;
       border-radius: 16px;
       display: flex;
       flex-direction: row; 
       align-items: flex-start;
-      gap: 12px;
+      gap: 15px; /* More gap between name and text */
       transition: 0.2s;
     }
 
@@ -134,58 +122,32 @@
 
     .post-username {
       font-weight: 700;
-      color: #60a5fa; /* Bright Neon Blue */
+      color: #60a5fa;
       white-space: nowrap;
-      min-width: 60px;
+      min-width: 100px; /* Slightly wider name column */
       text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+      font-size: 17px;
     }
 
     .post-content {
       flex-grow: 1;
       color: #f1f5f9;
       word-wrap: break-word;
-      font-size: 15px;
-      line-height: 1.5;
+      font-size: 16px; /* Slightly larger font for desktop readability */
+      line-height: 1.6;
     }
 
     .post-date {
-      font-size: 12px;
+      font-size: 13px;
       color: #64748b;
       margin-left: 10px;
       font-weight: 400;
     }
+
+    /* DESKTOP SPECIFIC TWEAKS */
+    @media (min-width: 768px) {
+      #app-container {
+        padding: 40px; /* More breathing room on sides for desktop */
+      }
+    }
   </style>
-</head>
-<body>
-
-<div id="app-container">
-  <h2>Public Wall</h2>
-
-  <!-- LOGIN / SIGNUP -->
-  <div id="auth">
-    <input id="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <br>
-    <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Login</button>
-  </div>
-
-  <!-- APP -->
-  <div id="app" style="display:none;">
-    <input id="username" placeholder="Display Name" />
-    <textarea id="postContent" placeholder="What's on your mind?" rows="3"></textarea>
-    
-    <button id="postBtn">Post Message</button>
-    <button id="logoutBtn">Logout</button>
-  </div>
-
-  <!-- POSTS -->
-  <ul id="posts"></ul>
-</div>
-
-<!-- SCRIPTS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
-
-</body>
-</html>
