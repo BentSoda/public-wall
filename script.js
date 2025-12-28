@@ -1,84 +1,57 @@
-// ---- YOUR SUPABASE CREDENTIALS ----
+// ---- CREDENTIALS ----
 const SUPABASE_URL = "https://doenhxnmmvlgkpjkznlq.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZW5oeG5tbXZsZ2twamt6bmxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjMzODgsImV4cCI6MjA4MjMzOTM4OH0.237Xb6373cDOJP8PrZ7lXmVs0BchktD9f7Z0YMbXNdg";
-// -----------------------------------
+// -------------------
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* DOM REFERENCES */
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 const usernameInput = document.getElementById('username');
 const postContent = document.getElementById('postContent');
-const loginBox = document.getElementById('login-box');
+const authCard = document.getElementById('auth-card');
 const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
-const logoutHeaderBtn = document.getElementById('logoutHeaderBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 
-// Load saved username
-if(localStorage.getItem('wall_username')) {
-  usernameInput.value = localStorage.getItem('wall_username');
-}
+// Load username
+if(localStorage.getItem('wall_username')) usernameInput.value = localStorage.getItem('wall_username');
 
 document.getElementById('signupBtn').onclick = signup;
 document.getElementById('loginBtn').onclick = login;
-logoutHeaderBtn.onclick = logout;
+logoutBtn.onclick = logout;
 document.getElementById('postBtn').onclick = addPost;
 
-/* TOAST */
-function showToast(message) {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = message;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
+function showToast(msg) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
 }
 
-/* AVATAR COLORS */
-function getAvatarGradient(name) {
-  const gradients = [
-    "linear-gradient(135deg, #f97316, #fbbf24)", /* Orange */
-    "linear-gradient(135deg, #ec4899, #db2777)", /* Pink */
-    "linear-gradient(135deg, #8b5cf6, #7c3aed)", /* Purple */
-    "linear-gradient(135deg, #3b82f6, #2563eb)"  /* Blue */
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return gradients[Math.abs(hash) % gradients.length];
+function getAvatarColor(name) {
+  const c = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef'];
+  let h = 0; for(let i=0; i<name.length; i++) h = name.charCodeAt(i) + ((h<<5)-h);
+  return c[Math.abs(h)%c.length];
 }
 
-/* TIME RELATIVE */
-function timeAgo(dateString) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.floor((now - date) / 1000);
-  if (seconds < 60) return 'Just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return date.toLocaleDateString();
+function timeAgo(d) {
+  const s = Math.floor((new Date() - new Date(d))/1000);
+  if(s<60) return 'Just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  return Math.floor(s/3600)+'h ago';
 }
 
-/* AUTH */
 async function signup() {
   const { error } = await supabaseClient.auth.signUp({ email: email.value, password: password.value });
-  if (error) showToast(error.message);
-  else showToast("Check your email to confirm.");
+  if(error) showToast(error.message); else showToast("Check email.");
 }
 
 async function login() {
   const { error } = await supabaseClient.auth.signInWithPassword({ email: email.value, password: password.value });
-  if (error) showToast(error.message);
-  else {
-    await checkUser();
-    showToast("Welcome back!");
-  }
+  if(error) showToast(error.message); else { checkUser(); showToast("Welcome"); }
 }
 
 async function logout() {
@@ -88,104 +61,57 @@ async function logout() {
 
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
-  if (data && data.user) {
-    loginBox.classList.add('hidden');
+  if(data && data.user) {
+    authCard.classList.add('hidden');
+    appDiv.classList.remove('hidden');
     appDiv.style.display = 'block';
-    logoutHeaderBtn.classList.remove('hidden');
+    logoutBtn.classList.remove('hidden');
+    loadPosts(); // Ensure posts load after login
   }
 }
 
-/* POST LOGIC (OPTIMISTIC UI - NO JITTER) */
 async function addPost() {
   const { data } = await supabaseClient.auth.getUser();
-  if (!data || !data.user) return showToast("Please login first.");
-
+  if(!data || !data.user) return showToast("Login first.");
+  
   const username = usernameInput.value.trim();
-  if (!username) return showToast("Enter a display name.");
-  if (!postContent.value.trim()) return showToast("Write something!");
+  if(!username) return showToast("Enter name.");
+  if(!postContent.value.trim()) return showToast("Write something.");
 
   localStorage.setItem('wall_username', username);
 
-  // 1. RENDER LOCALLY IMMEDIATELY (Stops jitter)
+  // Optimistic UI (No Jitter)
   const tempId = 'local-' + Date.now();
   const li = document.createElement('li');
-  li.className = 'post-item';
-  li.id = tempId;
-  
-  li.innerHTML = `
-    <div class="avatar" style="background: ${getAvatarGradient(username)}">${username.charAt(0).toUpperCase()}</div>
-    <div>
-      <div class="post-meta">
-        <span class="post-user">@${username}</span>
-        <span class="post-time">Just now</span>
-      </div>
-      <div class="post-content">${postContent.value}</div>
-    </div>
-  `;
-  
+  li.className = 'post'; li.id = tempId;
+  const name = username; const color = getAvatarColor(name);
+  li.innerHTML = `<div class="avatar" style="background:${color}">${name[0].toUpperCase()}</div><div><div class="post-header"><span class="name">@${name}</span><span class="time">Just now</span></div><div class="content">${postContent.value}</div></div>`;
   postsList.prepend(li);
-  postContent.value = ''; // Clear input instantly
-  showToast("Posted!");
+  postContent.value = ''; showToast("Posted!");
 
-  // 2. SEND TO DATABASE
-  const { error } = await supabaseClient
-    .from('posts')
-    .insert({
-      content: li.querySelector('.post-content').textContent,
-      username: username,
-      user_id: data.user.id
-    });
-
-  // 3. Realtime will eventually replace this with the real DB post,
-  // but we don't need to reload here.
-  if (error) {
-    showToast(error.message);
-    li.remove(); // Remove if failed
-  }
+  const { error } = await supabaseClient.from('posts').insert({ content: li.querySelector('.content').textContent, username: username, user_id: data.user.id });
+  if(error) { showToast(error.message); li.remove(); }
 }
 
-/* DISPLAY LOGIC */
 async function loadPosts() {
-  const { data, error } = await supabaseClient
-    .from('posts')
-    .select('id, content, username, created_at')
-    .order('created_at', { ascending: false });
-
-  if (error) return console.error(error);
+  const { data, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
+  if(error) return console.error(error);
+  if(!data) return;
 
   postsList.innerHTML = '';
-  data.forEach(post => {
+  data.forEach(p => {
     const li = document.createElement('li');
-    li.className = 'post-item';
-    
-    const name = post.username || "Anonymous";
-    const liContent = `
-      <div class="avatar" style="background: ${getAvatarGradient(name)}">${name.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="post-meta">
-          <span class="post-user">@${name}</span>
-          <span class="post-time">${timeAgo(post.created_at)}</span>
-        </div>
-        <div class="post-content">${post.content}</div>
-      </div>
-    `;
-    li.innerHTML = liContent;
+    li.className = 'post';
+    const name = p.username || "Anon"; const color = getAvatarColor(name);
+    li.innerHTML = `<div class="avatar" style="background:${color}">${name[0].toUpperCase()}</div><div><div class="post-header"><span class="name">@${name}</span><span class="time">${timeAgo(p.created_at)}</span></div><div class="content">${p.content}</div></div>`;
     postsList.appendChild(li);
   });
 }
 
-/* REALTIME */
 function subscribeToPosts() {
-  supabaseClient
-    .channel('public:posts')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
-      // Only reload if we didn't already render it locally
-      loadPosts(); 
-    })
-    .subscribe();
+  supabaseClient.channel('public:posts').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, () => loadPosts()).subscribe();
 }
 
-/* INIT */
 loadPosts();
 checkUser();
 subscribeToPosts();
