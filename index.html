@@ -14,27 +14,26 @@
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
-      background-color: #000000; /* Pure Black for contrast */
+      background-color: #000000; /* Pure Black */
       color: #ffffff;
       min-height: 100vh;
       padding-top: 80px;
       overflow-x: hidden;
     }
 
-    /* CANVAS BACKGROUND */
+    /* --- CANVAS BACKGROUND --- */
     #starfield {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
-      /* Optional: Adds a subtle gradient behind the stars */
       background: radial-gradient(circle at center, #0f172a 0%, #000000 100%);
     }
 
-    /* STICKY HEADER */
+    /* --- STICKY HEADER --- */
     .glass-header {
       position: fixed; top: 0; width: 100%; height: 70px;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255,255,255,0.08);
       display: flex; align-items: center; justify-content: center; z-index: 100;
@@ -58,56 +57,70 @@
     }
     .btn-text:hover { color: white; text-shadow: 0 0 8px white; }
 
-    /* CONTAINER */
+    /* --- CONTAINER --- */
     .container { max-width: 700px; margin: 0 auto; padding: 0 20px 40px; }
 
-    /* GLASS CARD */
+    /* --- GLASS CARD --- */
     .card {
-      background: rgba(10, 10, 15, 0.65);
+      background: rgba(10, 10, 15, 0.7);
       backdrop-filter: blur(25px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-top: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: 1px solid rgba(255,255,255,0.15);
       border-radius: 24px;
       padding: 30px;
       margin-bottom: 30px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* INPUTS */
+    /* --- INPUTS (NO WHITE GLOW FIX) --- */
     input, textarea {
       width: 100%;
-      background: rgba(0,0,0,0.5);
+      background: #050505; /* Deep Black Background */
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 12px;
       padding: 16px;
       color: white;
       font-size: 16px;
       font-family: 'Inter', sans-serif;
-      transition: 0.3s;
+      transition: all 0.3s;
     }
 
-    /* INTENSE NEON GLOW */
+    /* FORCE BROWSER AUTOFILL TO BE BLACK (No White Background) */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus {
+        -webkit-text-fill-color: white !important;
+        -webkit-box-shadow: 0 0 0px 1000px #000000 inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+        background-color: #000000 !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+
+    /* DEEP INDIGO FOCUS GLOW (NO WHITE) */
     input:focus, textarea:focus {
-      border-color: #818cf8; /* Indigo */
-      background: rgba(0,0,0,0.7);
-      box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.2), 0 0 20px rgba(129, 140, 248, 0.2);
+      border-color: #4f46e5; /* Deep Indigo */
+      background: #000000;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.3); /* Deep Purple Shadow */
     }
 
     textarea { min-height: 100px; resize: none; }
 
-    /* BUTTONS */
+    /* --- BUTTONS --- */
     .btn-primary {
       width: 100%; padding: 16px;
-      background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); /* Darker Indigo */
       color: white; border: none; border-radius: 12px;
       font-weight: 700; font-size: 15px; cursor: pointer;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
       transition: 0.2s;
     }
-    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .btn-primary:hover { filter: brightness(1.2); transform: translateY(-2px); }
 
     .btn-link {
       background: none; border: none; color: #64748b; cursor: pointer;
@@ -115,7 +128,7 @@
     }
     .btn-link:hover { color: white; }
 
-    /* POST LIST */
+    /* --- POST LIST --- */
     #posts { list-style: none; padding: 0; margin: 0; }
 
     .post {
@@ -131,13 +144,12 @@
     .time { font-size: 12px; color: #475569; }
     .content { font-size: 16px; line-height: 1.6; color: #cbd5e1; white-space: pre-wrap; }
 
-    /* UTILS */
+    /* --- UTILS --- */
     .hidden { display: none !important; }
     
-    /* TOAST */
     #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 200; }
     .toast {
-      background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(99, 102, 241, 0.3);
+      background: rgba(15, 23, 42, 0.95); border: 1px solid #4f46e5;
       color: white; padding: 14px 24px; border-radius: 50px;
       font-size: 14px; margin-top: 10px; backdrop-filter: blur(10px);
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -148,7 +160,7 @@
 </head>
 <body>
 
-  <!-- REALTIME STARFIELD CANVAS -->
+  <!-- WARP SPEED CANVAS -->
   <canvas id="starfield"></canvas>
 
   <div id="toast-container"></div>
@@ -163,7 +175,7 @@
   <div class="container">
 
     <div id="auth" class="card">
-      <input id="email" placeholder="Email" type="email" />
+      <input id="email" placeholder="Email" type="email" autocomplete="off" />
       <input id="password" placeholder="Password" type="password" />
       <button id="loginBtn" class="btn-primary">Log In</button>
       <button id="signupBtn" class="btn-link">Create Account</button>
@@ -171,7 +183,7 @@
 
     <div id="app" class="hidden">
       <div class="card">
-        <input id="username" placeholder="Display Name" />
+        <input id="username" placeholder="Display Name" autocomplete="off" />
         <textarea id="postContent" placeholder="Share your thoughts..."></textarea>
         <button id="postBtn" class="btn-primary">Post Update</button>
       </div>
@@ -180,76 +192,48 @@
 
   </div>
 
-<!-- LOGIC -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 
-<!-- CANVAS ANIMATION SCRIPT -->
+<!-- STARFIELD SCRIPT -->
 <script>
   const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
+  let width, height, stars = [];
+  const numStars = 800;
+  const speed = 2.5;
 
-  let width, height;
-  let stars = [];
-  const numStars = 800; // High density
-  const speed = 2.5; // Warp speed
-
-  // Resize canvas
   function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
+    width = window.innerWidth; height = window.innerHeight;
+    canvas.width = width; canvas.height = height;
   }
   window.addEventListener('resize', resize);
   resize();
 
-  // Star Class
   class Star {
-    constructor() {
-      this.reset(true);
-    }
-
+    constructor() { this.reset(true); }
     reset(initial = false) {
       this.x = (Math.random() - 0.5) * width * 2;
       this.y = (Math.random() - 0.5) * height * 2;
-      this.z = initial ? Math.random() * width : width; // Depth
-      this.pz = this.z; // Previous z
-      this.color = ['#fff', '#a5b4fc', '#6366f1'][Math.floor(Math.random() * 3)]; // White or Purple/Blue
+      this.z = initial ? Math.random() * width : width;
+      this.pz = this.z;
+      this.color = ['#fff', '#a5b4fc', '#6366f1'][Math.floor(Math.random() * 3)];
     }
-
-    update() {
-      this.z = this.z - speed;
-      if (this.z < 1) this.reset();
-    }
-
+    update() { this.z = this.z - speed; if (this.z < 1) this.reset(); }
     draw() {
       const x = (this.x / this.z) * width + width / 2;
       const y = (this.y / this.z) * height + height / 2;
-      const r = (1 - this.z / width) * 2.5; // Size based on depth
-
+      const r = (1 - this.z / width) * 2.5;
       if (x < 0 || x > width || y < 0 || y > height) return;
-
-      ctx.beginPath();
-      ctx.fillStyle = this.color;
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.fillStyle = this.color; ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
   }
 
-  // Init Stars
   for (let i = 0; i < numStars; i++) stars.push(new Star());
-
-  // Animation Loop
   function animate() {
-    // Fade effect for trails
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'; 
     ctx.fillRect(0, 0, width, height);
-
-    stars.forEach(star => {
-      star.update();
-      star.draw();
-    });
+    stars.forEach(star => { star.update(); star.draw(); });
     requestAnimationFrame(animate);
   }
   animate();
