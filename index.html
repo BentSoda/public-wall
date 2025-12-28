@@ -14,38 +14,60 @@
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
-      background-color: #050505; /* Deep Black */
+      background-color: #020204; /* Deepest Void Black */
       color: #ffffff;
       min-height: 100vh;
       padding-top: 80px;
       overflow-x: hidden;
     }
 
-    /* --- MOVING STARFIELD BACKGROUND --- */
-    .stars, .nebula {
+    /* --- HYPER-INTENSE STARFIELD --- */
+    .stars-1, .stars-2, .stars-3, .nebula {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none;
       z-index: -1;
     }
 
-    /* Small Stars */
-    .stars {
+    /* Layer 1: Tiny Fast Stars (White/Blue) */
+    .stars-1 {
       background-image: 
-        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
-      background-size: 550px 550px, 350px 350px, 250px 250px;
-      background-position: 0 0, 40px 60px, 130px 270px;
-      animation: starMove 100s linear infinite;
+        radial-gradient(1px 1px at 10% 10%, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 20% 20%, #e0f2fe, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 40% 40%, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90% 90%, #bae6fd, rgba(0,0,0,0));
+      background-size: 500px 500px;
+      opacity: 0.8;
+      animation: starMove 50s linear infinite;
     }
 
-    /* Nebula Clouds */
+    /* Layer 2: Medium Glowing Stars (Purple/Pink) */
+    .stars-2 {
+      background-image: 
+        radial-gradient(2px 2px at 15% 50%, #e9d5ff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 80% 10%, #f5d0fe, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 60% 80%, #ddd6fe, rgba(0,0,0,0));
+      background-size: 700px 700px;
+      animation: starMove 80s linear infinite reverse;
+      filter: blur(0.5px);
+    }
+
+    /* Layer 3: Large Pulsing Stars (Indigo) */
+    .stars-3 {
+      background-image: 
+        radial-gradient(3px 3px at 50% 50%, #818cf8, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 30% 30%, #a78bfa, rgba(0,0,0,0));
+      background-size: 900px 900px;
+      animation: starMove 120s linear infinite;
+      filter: blur(1px);
+    }
+
+    /* Nebula Glow */
     .nebula {
-      background: radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.15), transparent 40%),
-                radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.1), transparent 30%);
-      opacity: 0.6;
-      animation: nebulaMove 60s ease-in-out infinite alternate;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15), transparent 40%);
+      animation: nebulaPulse 10s ease-in-out infinite alternate;
     }
 
     @keyframes starMove {
@@ -53,18 +75,18 @@
       to { transform: translateY(-1000px); }
     }
 
-    @keyframes nebulaMove {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.1); }
+    @keyframes nebulaPulse {
+      0% { opacity: 0.4; transform: scale(1); }
+      100% { opacity: 0.7; transform: scale(1.1); }
     }
 
     /* --- STICKY HEADER --- */
     .glass-header {
       position: fixed;
       top: 0; width: 100%; height: 70px;
-      background: rgba(5, 5, 5, 0.7);
-      backdrop-filter: blur(15px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(2, 2, 4, 0.75);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -72,130 +94,123 @@
     }
 
     .header-inner {
-      width: 100%;
-      max-width: 700px;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      width: 100%; max-width: 700px; padding: 0 20px;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
     .logo {
-      font-weight: 700;
-      font-size: 20px;
-      letter-spacing: -0.5px;
-      background: linear-gradient(to right, #fff, #94a3b8);
-      -webkit-background-clip: text;
-      color: transparent;
+      font-weight: 700; font-size: 20px; letter-spacing: -0.5px;
+      background: linear-gradient(to right, #fff, #818cf8);
+      -webkit-background-clip: text; color: transparent;
+      filter: drop-shadow(0 0 5px rgba(129, 140, 248, 0.5));
     }
 
     .btn-text {
-      background: none; border: none;
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
+      background: none; border: none; color: #64748b;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s;
     }
-    .btn-text:hover { color: white; }
+    .btn-text:hover { color: white; text-shadow: 0 0 8px rgba(255,255,255,0.5); }
 
     /* --- CONTAINER --- */
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 0 20px 40px;
-    }
+    .container { max-width: 700px; margin: 0 auto; padding: 0 20px 40px; }
 
-    /* --- GLASS CARD --- */
+    /* --- REFINED GLASS CARD --- */
     .card {
-      background: rgba(20, 20, 20, 0.6);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(10, 10, 12, 0.6);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      animation: floatUp 0.5s ease-out;
+      border-top: 1px solid rgba(255,255,255,0.12); /* Lighter top edge for depth */
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes floatUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* --- INPUTS --- */
+    /* --- INPUTS (NO WHITE GLOW) --- */
     input, textarea {
       width: 100%;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.4);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 14px;
-      color: white;
+      border-radius: 12px;
+      padding: 16px;
+      color: #ffffff;
       font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      transition: 0.3s;
+      font-size: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* INTENSE INDIGO GLOW */
     input:focus, textarea:focus {
-      border-color: rgba(255,255,255,0.3);
-      background: rgba(0,0,0,0.5);
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
+      border-color: #6366f1; /* Indigo */
+      background: rgba(0,0,0,0.6);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), inset 0 0 15px rgba(99, 102, 241, 0.05);
+      transform: translateY(-1px);
     }
 
-    textarea { min-height: 80px; resize: none; }
+    textarea { min-height: 90px; resize: none; }
 
     /* --- BUTTONS --- */
     .btn-primary {
       width: 100%;
-      padding: 14px;
-      background: white;
-      color: black;
+      padding: 16px;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 15px;
       cursor: pointer;
       transition: 0.2s;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
     }
-    .btn-primary:hover { opacity: 0.9; transform: scale(0.995); }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
     .btn-link {
-      background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 13px; margin-top: 10px; display: block; width: 100%; text-align: center;
+      background: none; border: none; color: #64748b; cursor: pointer; 
+      font-size: 13px; margin-top: 15px; display: block; width: 100%; text-align: center;
     }
-    .btn-link:hover { color: white; }
+    .btn-link:hover { color: #a5b4fc; }
 
-    /* --- FEED (NO ICONS) --- */
+    /* --- FEED --- */
     #posts { list-style: none; padding: 0; margin: 0; }
 
     .post {
       border-bottom: 1px solid rgba(255,255,255,0.05);
-      padding: 20px 0;
-      animation: fade 0.4s ease;
+      padding: 24px 0;
+      animation: fade 0.5s ease;
     }
     .post:last-child { border-bottom: none; }
 
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .post-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .username {
       font-weight: 700;
-      font-size: 15px;
-      color: #e2e8f0;
+      font-size: 16px;
+      color: #f8fafc;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
 
     .time {
       font-size: 12px;
-      color: #4b5563;
+      color: #475569;
+      font-weight: 500;
     }
 
     .content {
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #cbd5e1;
       white-space: pre-wrap;
     }
@@ -206,34 +221,35 @@
     /* TOAST */
     #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 200; }
     .toast {
-      background: rgba(20,20,20,0.9); border: 1px solid rgba(255,255,255,0.1);
-      color: white; padding: 12px 24px; border-radius: 50px;
-      font-size: 14px; margin-top: 10px; backdrop-filter: blur(10px);
+      background: rgba(10, 10, 12, 0.9); border: 1px solid rgba(99, 102, 241, 0.3);
+      color: white; padding: 14px 26px; border-radius: 50px;
+      font-size: 14px; margin-top: 12px; backdrop-filter: blur(10px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
       animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } 
 
   </style>
 </head>
 <body>
 
-  <!-- MOVING BACKGROUND -->
-  <div class="stars"></div>
+  <!-- MULTIPLE LAYERS OF STARS -->
+  <div class="stars-1"></div>
+  <div class="stars-2"></div>
+  <div class="stars-3"></div>
   <div class="nebula"></div>
 
   <div id="toast-container"></div>
 
-  <!-- STICKY HEADER -->
   <div class="glass-header">
     <div class="header-inner">
-      <div class="logo">Public Wall</div>
+      <div class="logo">Wall</div>
       <button id="logoutBtn" class="btn-text hidden">Sign Out</button>
     </div>
   </div>
 
   <div class="container">
 
-    <!-- LOGIN CARD -->
     <div id="auth" class="card">
       <input id="email" placeholder="Email" type="email" />
       <input id="password" placeholder="Password" type="password" />
@@ -241,15 +257,12 @@
       <button id="signupBtn" class="btn-link">Create Account</button>
     </div>
 
-    <!-- APP -->
     <div id="app" class="hidden">
-      
       <div class="card">
         <input id="username" placeholder="Display Name" />
         <textarea id="postContent" placeholder="Share your thoughts..."></textarea>
         <button id="postBtn" class="btn-primary">Post Update</button>
       </div>
-
       <ul id="posts"></ul>
     </div>
 
