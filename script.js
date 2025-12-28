@@ -6,7 +6,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* DOM references */
+/* DOM REFERENCES */
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 const usernameInput = document.getElementById('username');
@@ -14,47 +14,78 @@ const postContent = document.getElementById('postContent');
 const authDiv = document.getElementById('auth');
 const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
+const charCount = document.getElementById('charCount');
+const postBtn = document.getElementById('postBtn');
+const logoutHeaderBtn = document.getElementById('logoutHeaderBtn');
+
+// State
+let currentUserId = null;
 
 // Load saved username
 if(localStorage.getItem('wall_username')) {
   usernameInput.value = localStorage.getItem('wall_username');
 }
 
+/* EVENT LISTENERS */
 document.getElementById('signupBtn').onclick = signup;
 document.getElementById('loginBtn').onclick = login;
-document.getElementById('logoutBtn').onclick = logout;
-document.getElementById('postBtn').onclick = addPost;
+logoutHeaderBtn.onclick = logout;
+postBtn.onclick = addPost;
 
-/* TOAST NOTIFICATION */
+// Input validation (enable/disable button)
+postContent.addEventListener('input', () => {
+  const len = postContent.value.length;
+  charCount.textContent = `${len}/280`;
+  charCount.style.color = len > 280 ? 'var(--danger)' : 'var(--text-muted)';
+  postBtn.disabled = len === 0 || len > 280;
+});
+
+/* UTILS: PRO PASTEL COLORS */
+function getAvatarColor(name) {
+  const colors = ['#a5b4fc', '#fca5a5', '#86efac', '#fde047', '#67e8f9', '#f0abfc', '#fdba74'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
+/* UTILS: RELATIVE TIME (Just now, 2m ago) */
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+
+  if (seconds < 10) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
+  
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  
+  return date.toLocaleDateString();
+}
+
+/* TOAST */
 function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.textContent = message;
-  
   container.appendChild(toast);
   
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'scale(0.8)';
+    toast.style.transform = 'translateY(-10px)';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
-}
-
-/* AVATAR COLOR GENERATOR */
-function getAvatarColor(username) {
-  const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e'];
-  let hash = 0;
-  for (let i = 0; i < username.length; i++) hash = username.charCodeAt(i) + ((hash << 5) - hash);
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
 }
 
 /* AUTH */
 async function signup() {
   const { error } = await supabaseClient.auth.signUp({ email: email.value, password: password.value });
   if (error) showToast(error.message, 'error');
-  else showToast("Success! Check your email.", 'success');
+  else showToast("Check your email to confirm.", 'success');
 }
 
 async function login() {
@@ -62,7 +93,7 @@ async function login() {
   if (error) showToast(error.message, 'error');
   else {
     await checkUser();
-    showToast("Welcome back!", 'success');
+    showToast("Welcome back.", 'success');
   }
 }
 
@@ -74,18 +105,20 @@ async function logout() {
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   if (data && data.user) {
-    authDiv.style.display = 'none';
+    authDiv.classList.add('hidden');
     appDiv.style.display = 'block';
+    logoutHeaderBtn.classList.remove('hidden');
+    currentUserId = data.user.id;
   }
 }
 
 /* POST LOGIC */
 async function addPost() {
   const { data } = await supabaseClient.auth.getUser();
-  if (!data || !data.user) return showToast("Please login first.", 'error');
+  if (!data || !data.user) return showToast("Please login.", 'error');
 
   const username = usernameInput.value.trim();
-  if (!username) return showToast("Please enter a display name.", 'error');
+  if (!username) return showToast("Enter a display name.", 'error');
 
   localStorage.setItem('wall_username', username);
 
@@ -100,12 +133,14 @@ async function addPost() {
   if (error) showToast(error.message, 'error');
   else {
     postContent.value = '';
-    showToast("Message posted!", 'success');
+    charCount.textContent = '0/280';
+    postBtn.disabled = true;
+    showToast("Posted.", 'success');
     loadPosts();
   }
 }
 
-/* DISPLAY LOGIC (With Avatars) */
+/* DISPLAY LOGIC */
 async function loadPosts() {
   const { data, error } = await supabaseClient
     .from('posts')
@@ -117,21 +152,21 @@ async function loadPosts() {
   postsList.innerHTML = '';
   data.forEach(post => {
     const li = document.createElement('li');
-    li.className = 'post-card';
+    li.className = 'post-item';
     
     const name = post.username || "Anonymous";
     const initials = name.charAt(0).toUpperCase();
     const color = getAvatarColor(name);
-    const date = new Date(post.created_at).toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
+    const timeString = timeAgo(post.created_at);
 
     li.innerHTML = `
-      <div class="avatar" style="background-color: ${color};">${initials}</div>
+      <div class="avatar" style="background-color: ${color}; border:none;">${initials}</div>
       <div>
-        <div class="post-header">
-          <span class="post-username">@${name}</span>
-          <span class="post-date">${date}</span>
+        <div class="post-meta">
+          <span class="post-user">@${name}</span>
+          <span class="post-time">${timeString}</span>
         </div>
-        <div class="post-content">${post.content}</div>
+        <div class="post-body">${post.content}</div>
       </div>
     `;
     postsList.appendChild(li);
@@ -148,7 +183,7 @@ function subscribeToPosts() {
     .subscribe();
 }
 
-/* START */
+/* INIT */
 loadPosts();
 checkUser();
 subscribeToPosts();
