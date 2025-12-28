@@ -10,12 +10,11 @@ const email = document.getElementById('email');
 const password = document.getElementById('password');
 const usernameInput = document.getElementById('username');
 const postContent = document.getElementById('postContent');
-const authCard = document.getElementById('auth-card');
+const authCard = document.getElementById('auth');
 const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
 const logoutBtn = document.getElementById('logoutBtn');
 
-// Load username
 if(localStorage.getItem('wall_username')) usernameInput.value = localStorage.getItem('wall_username');
 
 document.getElementById('signupBtn').onclick = signup;
@@ -23,18 +22,13 @@ document.getElementById('loginBtn').onclick = login;
 logoutBtn.onclick = logout;
 document.getElementById('postBtn').onclick = addPost;
 
+/* LOGIC */
 function showToast(msg) {
   const c = document.getElementById('toast-container');
   const t = document.createElement('div');
   t.className = 'toast'; t.textContent = msg;
   c.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
-}
-
-function getAvatarColor(name) {
-  const c = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef'];
-  let h = 0; for(let i=0; i<name.length; i++) h = name.charCodeAt(i) + ((h<<5)-h);
-  return c[Math.abs(h)%c.length];
 }
 
 function timeAgo(d) {
@@ -66,26 +60,24 @@ async function checkUser() {
     appDiv.classList.remove('hidden');
     appDiv.style.display = 'block';
     logoutBtn.classList.remove('hidden');
-    loadPosts(); // Ensure posts load after login
+    loadPosts();
   }
 }
 
 async function addPost() {
   const { data } = await supabaseClient.auth.getUser();
   if(!data || !data.user) return showToast("Login first.");
-  
   const username = usernameInput.value.trim();
   if(!username) return showToast("Enter name.");
   if(!postContent.value.trim()) return showToast("Write something.");
 
   localStorage.setItem('wall_username', username);
 
-  // Optimistic UI (No Jitter)
+  // Optimistic UI
   const tempId = 'local-' + Date.now();
   const li = document.createElement('li');
   li.className = 'post'; li.id = tempId;
-  const name = username; const color = getAvatarColor(name);
-  li.innerHTML = `<div class="avatar" style="background:${color}">${name[0].toUpperCase()}</div><div><div class="post-header"><span class="name">@${name}</span><span class="time">Just now</span></div><div class="content">${postContent.value}</div></div>`;
+  li.innerHTML = `<div class="post-header"><span class="username">@${username}</span><span class="time">Just now</span></div><div class="content">${postContent.value}</div>`;
   postsList.prepend(li);
   postContent.value = ''; showToast("Posted!");
 
@@ -102,8 +94,7 @@ async function loadPosts() {
   data.forEach(p => {
     const li = document.createElement('li');
     li.className = 'post';
-    const name = p.username || "Anon"; const color = getAvatarColor(name);
-    li.innerHTML = `<div class="avatar" style="background:${color}">${name[0].toUpperCase()}</div><div><div class="post-header"><span class="name">@${name}</span><span class="time">${timeAgo(p.created_at)}</span></div><div class="content">${p.content}</div></div>`;
+    li.innerHTML = `<div class="post-header"><span class="username">@${p.username || 'Anonymous'}</span><span class="time">${timeAgo(p.created_at)}</span></div><div class="content">${p.content}</div>`;
     postsList.appendChild(li);
   });
 }
