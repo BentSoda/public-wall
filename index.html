@@ -1,215 +1,291 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Public Wall</title>
   
-  <!-- MODERN FONT -->
+  <!-- PREMIUM FONT: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      /* DESIGN TOKENS */
+      --bg-body: #09090b;      /* Deepest Black */
+      --bg-card: #18181b;      /* Dark Slate */
+      --bg-input: #09090b;     /* Transparent Inputs */
+      --border: #27272a;       /* Subtle Borders */
+      --text-main: #fafafa;    /* White-ish */
+      --text-muted: #a1a1aa;   /* Muted Grey */
+      --accent: #3b82f6;       /* Professional Blue */
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --font: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; outline: none; }
+
     body {
-      font-family: 'Outfit', sans-serif;
-      /* ANIMATED GRADIENT BACKGROUND */
-      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #4c1d95);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      color: #e2e8f0;
+      font-family: var(--font);
+      background-color: var(--bg-body);
+      color: var(--text-main);
       min-height: 100vh;
       margin: 0;
-      padding-bottom: 100px;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      /* Subtle vignette effect */
+      background-image: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* CONTAINER */
+    /* LAYOUT CONTAINER */
     #app-container {
       width: 100%;
-      max-width: 700px; /* Slightly narrower for a "feed" look */
-      margin: 0 auto;
-      padding: 20px;
+      max-width: 680px; /* Optimal reading width */
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    /* TITLE */
-    h2 {
-      text-align: center;
-      font-weight: 800;
-      font-size: 3rem;
-      margin-bottom: 40px;
-      color: white;
-      text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-      letter-spacing: -2px;
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    /* CARDS (Shared Class) */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s;
     }
 
     /* INPUTS */
     .input-group {
-      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     input, textarea {
       width: 100%;
-      padding: 16px;
-      margin: 8px 0;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      box-sizing: border-box;
-      color: white;
-      font-size: 16px;
-      font-family: 'Outfit', sans-serif;
-      transition: 0.3s;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 15px;
+      font-family: var(--font);
+      transition: all 0.2s ease;
     }
 
     input:focus, textarea:focus {
-      outline: none;
-      background: rgba(0, 0, 0, 0.4);
-      border-color: #a78bfa; /* Purple Glow */
-      box-shadow: 0 0 20px rgba(167, 139, 250, 0.2);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    textarea {
+      resize: none;
+      min-height: 100px;
     }
 
     /* BUTTONS */
-    .btn {
+    button {
       width: 100%;
-      padding: 16px;
-      margin-top: 10px;
-      background: #8b5cf6; /* Solid Purple */
-      color: white;
+      padding: 12px;
+      border-radius: 8px;
       border: none;
-      border-radius: 16px;
-      font-size: 17px;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 15px;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-      letter-spacing: 0.5px;
+      font-family: var(--font);
     }
 
-    .btn:hover {
-      background: #7c3aed;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Disabled State for Professional feel */
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
     .btn-secondary {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      box-shadow: none;
-      color: #cbd5e1;
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
     }
+
     .btn-secondary:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.5);
+      background-color: #27272a;
+      color: var(--text-main);
     }
 
-    /* POST LIST */
+    .btn-logout {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      width: auto;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .btn-logout:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
+
+    /* FEED LAYOUT */
     #posts {
-      list-style-type: none;
+      list-style: none;
       padding: 0;
-      margin-top: 40px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    /* POST CARD (Twitter Style) */
-    .post-card {
+    .post-item {
       display: grid;
-      grid-template-columns: 50px 1fr; /* Avatar | Content */
-      gap: 15px;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      animation: fadeUp 0.5s ease forwards;
-      opacity: 0;
+      grid-template-columns: 40px 1fr; /* Avatar | Content */
+      gap: 16px;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     /* AVATAR */
     .avatar {
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: #3b82f6;
+      background-color: #27272a;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 20px;
-      color: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-main);
+      border: 1px solid var(--border);
     }
 
-    /* POST HEADER */
-    .post-header {
+    /* POST META */
+    .post-meta {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       gap: 8px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .post-username {
-      font-weight: 700;
-      color: white;
-      font-size: 16px;
+    .post-user {
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: 15px;
     }
 
-    .post-date {
-      color: #64748b;
-      font-size: 14px;
+    .post-time {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
-    /* POST CONTENT */
-    .post-content {
-      color: #cbd5e1;
-      font-size: 17px;
+    .post-body {
+      font-size: 15px;
+      color: #d4d4d8; /* Slightly dimmed for readability */
       line-height: 1.5;
-      white-space: pre-wrap; /* Keeps line breaks */
+      white-space: pre-wrap;
     }
 
-    /* TOASTS */
+    /* TOASTS (Minimalist) */
     #toast-container {
       position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 24px;
+      right: 24px;
       z-index: 1000;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      width: 90%;
-      max-width: 400px;
+      gap: 12px;
     }
 
     .toast {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(10px);
-      color: white;
-      padding: 16px 24px;
-      border-radius: 50px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-md);
       font-size: 14px;
-      text-align: center;
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      min-width: 250px;
     }
     
-    .toast.success { border-color: #22c55e; color: #4ade80; }
-    .toast.error { border-color: #ef4444; color: #f87171; }
+    .toast::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent);
+    }
+    .toast.success::before { background-color: #22c55e; }
+    .toast.error::before { background-color: var(--danger); }
 
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    @keyframes toastSlide {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
 
-    @media (min-width: 768px) {
-      #app-container { padding: 40px 20px; }
+    /* UTILS */
+    .hidden { display: none !important; }
+    .auth-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    
+    @media (max-width: 600px) {
+      #toast-container { right: 20px; left: 20px; width: auto; }
+      .toast { width: 100%; }
     }
   </style>
 </head>
@@ -218,31 +294,44 @@
 <div id="toast-container"></div>
 
 <div id="app-container">
-  <h2>Public Wall</h2>
+  
+  <header>
+    <h1><div class="logo-dot"></div>Public Wall</h1>
+    <!-- Logout button only visible in app -->
+    <button id="logoutHeaderBtn" class="btn-logout hidden">Logout</button>
+  </header>
 
-  <!-- LOGIN / SIGNUP -->
-  <div id="auth">
+  <!-- LOGIN CARD -->
+  <div id="auth" class="card">
     <div class="input-group">
-      <input id="email" placeholder="Email Address" />
-      <input id="password" type="password" placeholder="Password" />
+      <input id="email" placeholder="Email address" type="email" autocomplete="email" />
+      <input id="password" placeholder="Password" type="password" />
     </div>
-    <button id="signupBtn" class="btn">Sign Up</button>
-    <button id="loginBtn" class="btn btn-secondary">Login</button>
+    <div class="auth-buttons">
+      <button id="signupBtn" class="btn-primary">Create Account</button>
+      <button id="loginBtn" class="btn-secondary">Log In</button>
+    </div>
   </div>
 
-  <!-- APP -->
-  <div id="app" style="display:none;">
-    <div class="input-group">
-      <input id="username" placeholder="Display Name" />
-      <textarea id="postContent" placeholder="What's happening?" rows="3"></textarea>
-    </div>
+  <!-- APP CARD -->
+  <div id="app" class="hidden" style="display: none;">
     
-    <button id="postBtn" class="btn">Post Now</button>
-    <button id="logoutBtn" class="btn btn-secondary">Logout</button>
-  </div>
+    <!-- Composer Card -->
+    <div class="card">
+      <div class="input-group">
+        <input id="username" placeholder="Display Name" type="text" autocomplete="off" />
+        <textarea id="postContent" placeholder="What's happening?" maxlength="280"></textarea>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+        <span id="charCount" style="font-size: 12px; color: var(--text-muted);">0/280</span>
+        <button id="postBtn" class="btn-primary" disabled style="width: auto; padding-left: 24px; padding-right: 24px;">Post</button>
+      </div>
+    </div>
 
-  <!-- POSTS -->
-  <ul id="posts"></ul>
+    <!-- Feed -->
+    <ul id="posts"></ul>
+
+  </div>
 </div>
 
 <!-- SCRIPTS -->
