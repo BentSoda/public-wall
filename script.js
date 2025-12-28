@@ -6,14 +6,15 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* DOM references */
+/* DOM REFERENCES */
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 const usernameInput = document.getElementById('username');
 const postContent = document.getElementById('postContent');
-const authDiv = document.getElementById('auth');
+const loginBox = document.getElementById('login-box');
 const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
+const logoutHeaderBtn = document.getElementById('logoutHeaderBtn');
 
 // Load saved username
 if(localStorage.getItem('wall_username')) {
@@ -22,10 +23,10 @@ if(localStorage.getItem('wall_username')) {
 
 document.getElementById('signupBtn').onclick = signup;
 document.getElementById('loginBtn').onclick = login;
-document.getElementById('logoutBtn').onclick = logout;
+logoutHeaderBtn.onclick = logout;
 document.getElementById('postBtn').onclick = addPost;
 
-/* TOAST NOTIFICATION */
+/* TOAST */
 function showToast(message) {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
@@ -38,15 +39,13 @@ function showToast(message) {
   }, 3000);
 }
 
-/* AVATAR GRADIENT COLORS */
+/* AVATAR COLORS */
 function getAvatarGradient(name) {
   const gradients = [
-    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-    "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-    "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-    "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)"
+    "linear-gradient(135deg, #f97316, #fbbf24)", /* Orange */
+    "linear-gradient(135deg, #ec4899, #db2777)", /* Pink */
+    "linear-gradient(135deg, #8b5cf6, #7c3aed)", /* Purple */
+    "linear-gradient(135deg, #3b82f6, #2563eb)"  /* Blue */
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -70,7 +69,7 @@ function timeAgo(dateString) {
 async function signup() {
   const { error } = await supabaseClient.auth.signUp({ email: email.value, password: password.value });
   if (error) showToast(error.message);
-  else showToast("Success! Check your email.");
+  else showToast("Check your email to confirm.");
 }
 
 async function login() {
@@ -90,34 +89,58 @@ async function logout() {
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   if (data && data.user) {
-    authDiv.style.display = 'none';
+    loginBox.classList.add('hidden');
     appDiv.style.display = 'block';
+    logoutHeaderBtn.classList.remove('hidden');
   }
 }
 
-/* POST LOGIC */
+/* POST LOGIC (OPTIMISTIC UI - NO JITTER) */
 async function addPost() {
   const { data } = await supabaseClient.auth.getUser();
   if (!data || !data.user) return showToast("Please login first.");
 
   const username = usernameInput.value.trim();
-  if (!username) return showToast("Please enter a display name.");
+  if (!username) return showToast("Enter a display name.");
+  if (!postContent.value.trim()) return showToast("Write something!");
 
   localStorage.setItem('wall_username', username);
 
+  // 1. RENDER LOCALLY IMMEDIATELY (Stops jitter)
+  const tempId = 'local-' + Date.now();
+  const li = document.createElement('li');
+  li.className = 'post-item';
+  li.id = tempId;
+  
+  li.innerHTML = `
+    <div class="avatar" style="background: ${getAvatarGradient(username)}">${username.charAt(0).toUpperCase()}</div>
+    <div>
+      <div class="post-meta">
+        <span class="post-user">@${username}</span>
+        <span class="post-time">Just now</span>
+      </div>
+      <div class="post-content">${postContent.value}</div>
+    </div>
+  `;
+  
+  postsList.prepend(li);
+  postContent.value = ''; // Clear input instantly
+  showToast("Posted!");
+
+  // 2. SEND TO DATABASE
   const { error } = await supabaseClient
     .from('posts')
     .insert({
-      content: postContent.value,
+      content: li.querySelector('.post-content').textContent,
       username: username,
       user_id: data.user.id
     });
 
-  if (error) showToast(error.message);
-  else {
-    postContent.value = '';
-    showToast("Message posted!");
-    loadPosts();
+  // 3. Realtime will eventually replace this with the real DB post,
+  // but we don't need to reload here.
+  if (error) {
+    showToast(error.message);
+    li.remove(); // Remove if failed
   }
 }
 
@@ -128,31 +151,25 @@ async function loadPosts() {
     .select('id, content, username, created_at')
     .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) return console.error(error);
 
   postsList.innerHTML = '';
   data.forEach(post => {
     const li = document.createElement('li');
-    li.className = 'post-card';
+    li.className = 'post-item';
     
     const name = post.username || "Anonymous";
-    const initials = name.charAt(0).toUpperCase();
-    const gradient = getAvatarGradient(name);
-    const timeString = timeAgo(post.created_at);
-
-    li.innerHTML = `
-      <div class="avatar" style="background: ${gradient};">${initials}</div>
+    const liContent = `
+      <div class="avatar" style="background: ${getAvatarGradient(name)}">${name.charAt(0).toUpperCase()}</div>
       <div>
-        <div class="post-header">
+        <div class="post-meta">
           <span class="post-user">@${name}</span>
-          <span class="post-time">${timeString}</span>
+          <span class="post-time">${timeAgo(post.created_at)}</span>
         </div>
-        <div class="post-body">${post.content}</div>
+        <div class="post-content">${post.content}</div>
       </div>
     `;
+    li.innerHTML = liContent;
     postsList.appendChild(li);
   });
 }
@@ -162,12 +179,13 @@ function subscribeToPosts() {
   supabaseClient
     .channel('public:posts')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
-      loadPosts();
+      // Only reload if we didn't already render it locally
+      loadPosts(); 
     })
     .subscribe();
 }
 
-/* START */
+/* INIT */
 loadPosts();
 checkUser();
 subscribeToPosts();
