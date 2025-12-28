@@ -5,259 +5,257 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Public Wall</title>
   
-  <!-- FONT -->
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- PREMIUM FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --bg: #000000;
+      --card: #0a0a0a;
+      --border: #222222;
+      --text-main: #ffffff;
+      --text-sub: #888888;
+      --accent: #6366f1; /* Indigo */
+      --accent-glow: rgba(99, 102, 241, 0.4);
+    }
+
     * { box-sizing: border-box; outline: none; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #111827; /* Dark Matte */
-      color: #e5e7eb;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
       margin: 0;
+      padding-top: 70px; /* For fixed header */
       min-height: 100vh;
-      padding-top: 70px; /* Space for sticky header */
     }
 
-    /* STICKY HEADER */
-    header {
+    /* STICKY GLASS HEADER */
+    .glass-header {
       position: fixed;
       top: 0;
-      left: 0;
-      right: 0;
+      width: 100%;
       height: 60px;
-      background-color: #1f2937;
-      border-bottom: 1px solid #374151;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+    }
+
+    .header-content {
+      width: 100%;
+      max-width: 700px;
       padding: 0 20px;
-      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .logo {
-      font-weight: 700;
-      font-size: 20px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.5px;
       color: white;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
-    
-    .logo-dot { width: 12px; height: 12px; background: #f97316; border-radius: 4px; }
 
-    .btn-logout {
+    .dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .btn-small {
       background: transparent;
-      color: #9ca3af;
-      border: 1px solid #4b5563;
+      color: var(--text-sub);
+      border: 1px solid var(--border);
       padding: 6px 16px;
-      border-radius: 6px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 13px;
       transition: 0.2s;
     }
-    .btn-logout:hover { background: #374151; color: white; }
+    .btn-small:hover { color: white; border-color: white; }
 
-    /* CONTAINER */
-    #app-container {
+    /* MAIN LAYOUT */
+    .container {
       max-width: 700px;
       margin: 0 auto;
       padding: 20px;
     }
 
-    /* CARDS */
-    .card {
-      background-color: #1f2937;
-      border: 1px solid #374151;
-      border-radius: 12px;
+    /* COMPOSER CARD */
+    .composer {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       padding: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
     }
-
-    /* COMPOSER (INPUT) */
-    .composer-header {
-      font-size: 14px;
-      font-weight: 600;
-      color: #9ca3af;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    
+    /* Subtle shine effect */
+    .composer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
     }
 
     input, textarea {
       width: 100%;
-      background-color: #111827;
-      border: 1px solid #374151;
-      border-radius: 8px;
-      padding: 12px;
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
       color: white;
+      font-family: 'Inter', sans-serif;
       font-size: 15px;
-      font-family: inherit;
       margin-bottom: 12px;
-      resize: none;
       transition: 0.2s;
     }
 
     input:focus, textarea:focus {
-      border-color: #f97316; /* Orange Accent */
-      background-color: #0f172a;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
 
-    button {
+    .btn-main {
       width: 100%;
-      padding: 12px;
-      background-color: #f97316; /* Orange */
-      color: white;
+      padding: 14px;
+      background: white;
+      color: black;
       border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
+      border-radius: 10px;
+      font-weight: 700;
       font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.1s;
     }
-
-    button:hover { filter: brightness(1.1); }
-    button:active { transform: scale(0.98); }
-    
-    button.secondary {
-      background-color: #374151;
-      color: #d1d5db;
-      margin-top: 10px;
-    }
-    button.secondary:hover { background-color: #4b5563; }
+    .btn-main:active { transform: scale(0.98); }
 
     /* LOGIN CARD */
-    #login-box { margin-top: 40px; }
+    #auth-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      margin-top: 50px;
+    }
 
-    /* POST LIST */
+    /* FEED */
     #posts {
       list-style: none;
       padding: 0;
       margin: 0;
     }
 
-    .post-item {
+    .post {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
       display: grid;
-      grid-template-columns: 48px 1fr; /* Avatar | Content */
-      gap: 15px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #374151;
-      padding-bottom: 20px;
-      animation: fadeSlide 0.3s ease-out;
+      grid-template-columns: 44px 1fr;
+      gap: 16px;
+      animation: fade 0.3s ease;
     }
     
-    .post-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .post:last-child { border-bottom: none; }
 
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-    /* SQUARE AVATAR */
+    /* AVATAR */
     .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px; /* Square-ish */
-      background-color: #374151;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 20px;
+      font-size: 16px;
       color: white;
-      background: linear-gradient(135deg, #f97316, #fbbf24); /* Orange Gradient */
+      border: 1px solid #333;
     }
 
-    .post-meta {
+    .post-header {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
-    .post-user {
-      font-weight: 700;
-      color: white;
-    }
-
-    .post-time {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .post-content {
-      font-size: 15px;
-      color: #d1d5db;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    /* TOAST */
-    #toast-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .toast {
-      background: #1f2937;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      border-left: 4px solid #f97316;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      font-size: 14px;
-      animation: slideIn 0.3s ease;
-    }
-    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .name { font-weight: 700; color: white; font-size: 15px; }
+    .time { font-size: 13px; color: var(--text-sub); }
+    .content { color: #d1d5db; line-height: 1.5; font-size: 15px; white-space: pre-wrap; }
 
     /* UTILS */
     .hidden { display: none !important; }
+    
+    /* TOAST */
+    #toast-container { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+    .toast {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
 
-<!-- STICKY HEADER -->
-<header>
-  <div class="logo"><div class="logo-dot"></div>Public Wall</div>
-  <button id="logoutHeaderBtn" class="btn-logout hidden">Log Out</button>
-</header>
-
-<div id="toast-container"></div>
-
-<div id="app-container">
-
-  <!-- LOGIN SECTION -->
-  <div id="login-box" class="card">
-    <input id="email" placeholder="Email address" type="email" />
-    <input id="password" placeholder="Password" type="password" />
-    <button id="signupBtn" class="secondary">Create Account</button>
-    <button id="loginBtn">Log In</button>
+  <!-- STICKY HEADER -->
+  <div class="glass-header">
+    <div class="header-content">
+      <div class="logo"><div class="dot"></div>Wall</div>
+      <button id="logoutBtn" class="btn-small hidden">Sign Out</button>
+    </div>
   </div>
 
-  <!-- MAIN APP -->
-  <div id="app" class="hidden" style="display: none;">
-    
-    <!-- COMPOSER CARD (Fixed Input Area) -->
-    <div class="card">
-      <div class="composer-header">New Post</div>
-      <input id="username" placeholder="Display Name" />
-      <textarea id="postContent" placeholder="What's on your mind?" rows="3"></textarea>
-      <button id="postBtn">Post Update</button>
+  <div id="toast-container"></div>
+
+  <div class="container">
+
+    <!-- LOGIN -->
+    <div id="auth-card">
+      <input id="email" placeholder="Email" type="email" />
+      <input id="password" placeholder="Password" type="password" />
+      <button id="loginBtn" class="btn-main" style="background: #1f1f1f; color: white;">Log In</button>
+      <button id="signupBtn" class="btn-small" style="margin-top: 10px;">Create Account</button>
     </div>
 
-    <!-- FEED -->
-    <ul id="posts"></ul>
+    <!-- APP -->
+    <div id="app" class="hidden">
+      
+      <div class="composer">
+        <input id="username" placeholder="Display Name" />
+        <textarea id="postContent" placeholder="What's happening?" rows="2"></textarea>
+        <button id="postBtn" class="btn-main">Post</button>
+      </div>
+
+      <ul id="posts"></ul>
+    </div>
 
   </div>
-</div>
 
-<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
-
 </body>
 </html>
