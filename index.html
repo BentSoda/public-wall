@@ -5,47 +5,73 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Public Wall</title>
   
-  <!-- PREMIUM FONT -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #000000;
-      --card: #0a0a0a;
-      --border: #222222;
-      --text-main: #ffffff;
-      --text-sub: #888888;
-      --accent: #6366f1; /* Indigo */
-      --accent-glow: rgba(99, 102, 241, 0.4);
-    }
-
     * { box-sizing: border-box; outline: none; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
-      color: var(--text-main);
       margin: 0;
-      padding-top: 70px; /* For fixed header */
+      background-color: #050505; /* Deep Black */
+      color: #ffffff;
       min-height: 100vh;
+      padding-top: 80px;
+      overflow-x: hidden;
     }
 
-    /* STICKY GLASS HEADER */
+    /* --- MOVING STARFIELD BACKGROUND --- */
+    .stars, .nebula {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Small Stars */
+    .stars {
+      background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+      background-size: 550px 550px, 350px 350px, 250px 250px;
+      background-position: 0 0, 40px 60px, 130px 270px;
+      animation: starMove 100s linear infinite;
+    }
+
+    /* Nebula Clouds */
+    .nebula {
+      background: radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.15), transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.1), transparent 30%);
+      opacity: 0.6;
+      animation: nebulaMove 60s ease-in-out infinite alternate;
+    }
+
+    @keyframes starMove {
+      from { transform: translateY(0); }
+      to { transform: translateY(-1000px); }
+    }
+
+    @keyframes nebulaMove {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    /* --- STICKY HEADER --- */
     .glass-header {
       position: fixed;
-      top: 0;
-      width: 100%;
-      height: 60px;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      z-index: 1000;
+      top: 0; width: 100%; height: 70px;
+      background: rgba(5, 5, 5, 0.7);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 100;
     }
 
-    .header-content {
+    .header-inner {
       width: 100%;
       max-width: 700px;
       padding: 0 20px;
@@ -55,199 +81,173 @@
     }
 
     .logo {
-      font-weight: 800;
-      font-size: 18px;
+      font-weight: 700;
+      font-size: 20px;
       letter-spacing: -0.5px;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      color: transparent;
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent);
-    }
-
-    .btn-small {
-      background: transparent;
-      color: var(--text-sub);
-      border: 1px solid var(--border);
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 12px;
+    .btn-text {
+      background: none; border: none;
+      color: #64748b;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s;
     }
-    .btn-small:hover { color: white; border-color: white; }
+    .btn-text:hover { color: white; }
 
-    /* MAIN LAYOUT */
+    /* --- CONTAINER --- */
     .container {
       max-width: 700px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 0 20px 40px;
     }
 
-    /* COMPOSER CARD */
-    .composer {
-      background: var(--card);
-      border: 1px solid var(--border);
+    /* --- GLASS CARD --- */
+    .card {
+      background: rgba(20, 20, 20, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    /* Subtle shine effect */
-    .composer::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.5;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      animation: floatUp 0.5s ease-out;
     }
 
+    @keyframes floatUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- INPUTS --- */
     input, textarea {
       width: 100%;
-      background: #050505;
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
       padding: 14px;
       color: white;
       font-family: 'Inter', sans-serif;
       font-size: 15px;
-      margin-bottom: 12px;
-      transition: 0.2s;
+      transition: 0.3s;
     }
 
     input:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.5);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
     }
 
-    .btn-main {
+    textarea { min-height: 80px; resize: none; }
+
+    /* --- BUTTONS --- */
+    .btn-primary {
       width: 100%;
       padding: 14px;
       background: white;
       color: black;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 14px;
       cursor: pointer;
-      transition: transform 0.1s;
+      transition: 0.2s;
     }
-    .btn-main:active { transform: scale(0.98); }
+    .btn-primary:hover { opacity: 0.9; transform: scale(0.995); }
 
-    /* LOGIN CARD */
-    #auth-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 30px;
-      text-align: center;
-      margin-top: 50px;
+    .btn-link {
+      background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 13px; margin-top: 10px; display: block; width: 100%; text-align: center;
     }
+    .btn-link:hover { color: white; }
 
-    /* FEED */
-    #posts {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+    /* --- FEED (NO ICONS) --- */
+    #posts { list-style: none; padding: 0; margin: 0; }
 
     .post {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       padding: 20px 0;
-      display: grid;
-      grid-template-columns: 44px 1fr;
-      gap: 16px;
-      animation: fade 0.3s ease;
+      animation: fade 0.4s ease;
     }
-    
     .post:last-child { border-bottom: none; }
 
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-    /* AVATAR */
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 16px;
-      color: white;
-      border: 1px solid #333;
-    }
-
     .post-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
     }
 
-    .name { font-weight: 700; color: white; font-size: 15px; }
-    .time { font-size: 13px; color: var(--text-sub); }
-    .content { color: #d1d5db; line-height: 1.5; font-size: 15px; white-space: pre-wrap; }
+    .username {
+      font-weight: 700;
+      font-size: 15px;
+      color: #e2e8f0;
+    }
 
-    /* UTILS */
+    .time {
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    .content {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+    }
+
+    /* --- UTILS --- */
     .hidden { display: none !important; }
     
     /* TOAST */
-    #toast-container { position: fixed; top: 80px; right: 20px; z-index: 2000; }
+    #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 200; }
     .toast {
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 500;
+      background: rgba(20,20,20,0.9); border: 1px solid rgba(255,255,255,0.1);
+      color: white; padding: 12px 24px; border-radius: 50px;
+      font-size: 14px; margin-top: 10px; backdrop-filter: blur(10px);
+      animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
   </style>
 </head>
 <body>
 
-  <!-- STICKY HEADER -->
-  <div class="glass-header">
-    <div class="header-content">
-      <div class="logo"><div class="dot"></div>Wall</div>
-      <button id="logoutBtn" class="btn-small hidden">Sign Out</button>
-    </div>
-  </div>
+  <!-- MOVING BACKGROUND -->
+  <div class="stars"></div>
+  <div class="nebula"></div>
 
   <div id="toast-container"></div>
 
+  <!-- STICKY HEADER -->
+  <div class="glass-header">
+    <div class="header-inner">
+      <div class="logo">Public Wall</div>
+      <button id="logoutBtn" class="btn-text hidden">Sign Out</button>
+    </div>
+  </div>
+
   <div class="container">
 
-    <!-- LOGIN -->
-    <div id="auth-card">
+    <!-- LOGIN CARD -->
+    <div id="auth" class="card">
       <input id="email" placeholder="Email" type="email" />
       <input id="password" placeholder="Password" type="password" />
-      <button id="loginBtn" class="btn-main" style="background: #1f1f1f; color: white;">Log In</button>
-      <button id="signupBtn" class="btn-small" style="margin-top: 10px;">Create Account</button>
+      <button id="loginBtn" class="btn-primary">Log In</button>
+      <button id="signupBtn" class="btn-link">Create Account</button>
     </div>
 
     <!-- APP -->
     <div id="app" class="hidden">
       
-      <div class="composer">
+      <div class="card">
         <input id="username" placeholder="Display Name" />
-        <textarea id="postContent" placeholder="What's happening?" rows="2"></textarea>
-        <button id="postBtn" class="btn-main">Post</button>
+        <textarea id="postContent" placeholder="Share your thoughts..."></textarea>
+        <button id="postBtn" class="btn-primary">Post Update</button>
       </div>
 
       <ul id="posts"></ul>
