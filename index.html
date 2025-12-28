@@ -7,192 +7,210 @@
   
   <!-- MODERN FONT -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-  <!-- CSS STYLES -->
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      font-family: 'Outfit', sans-serif;
+      /* ANIMATED GRADIENT BACKGROUND */
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #4c1d95);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
       color: #e2e8f0;
-      display: flex;
-      justify-content: center;
       min-height: 100vh;
       margin: 0;
-      padding-top: 40px;
-      padding-bottom: 40px;
+      padding-bottom: 100px;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
+    /* CONTAINER */
     #app-container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 700px; /* Slightly narrower for a "feed" look */
+      margin: 0 auto;
       padding: 20px;
     }
 
+    /* TITLE */
     h2 {
       text-align: center;
       font-weight: 800;
-      font-size: 2.5rem;
-      margin-bottom: 30px;
-      background: linear-gradient(to right, #60a5fa, #c084fc);
-      -webkit-background-clip: text;
-      color: transparent;
-      letter-spacing: -1px;
+      font-size: 3rem;
+      margin-bottom: 40px;
+      color: white;
+      text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+      letter-spacing: -2px;
     }
 
-    /* Inputs */
+    /* INPUTS */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
     input, textarea {
       width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      background: rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      margin: 8px 0;
+      background: rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      border-radius: 16px;
       box-sizing: border-box;
       color: white;
       font-size: 16px;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Outfit', sans-serif;
       transition: 0.3s;
     }
 
     input:focus, textarea:focus {
       outline: none;
-      border-color: #60a5fa;
-      box-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.4);
+      border-color: #a78bfa; /* Purple Glow */
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.2);
     }
 
-    input::placeholder, textarea::placeholder { color: #94a3b8; }
-
-    /* Buttons */
-    button {
+    /* BUTTONS */
+    .btn {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       margin-top: 10px;
-      background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+      background: #8b5cf6; /* Solid Purple */
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 700;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      letter-spacing: 0.5px;
     }
 
-    button:hover { opacity: 0.9; transform: translateY(-2px); }
-    button:active { transform: translateY(0); }
-
-    #logoutBtn { 
-      background: rgba(239, 68, 68, 0.2); 
-      border: 1px solid rgba(239, 68, 68, 0.5);
+    .btn:hover {
+      background: #7c3aed;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
       box-shadow: none;
-      color: #fca5a5;
+      color: #cbd5e1;
     }
-    #logoutBtn:hover { 
-      background: rgba(239, 68, 68, 0.3); 
-      color: white;
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.5);
     }
 
-    /* Post List */
+    /* POST LIST */
     #posts {
       list-style-type: none;
       padding: 0;
-      margin-top: 20px;
+      margin-top: 40px;
     }
 
-    /* CARD WITH ANIMATION */
+    /* POST CARD (Twitter Style) */
     .post-card {
-      background: rgba(30, 41, 59, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: row; 
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 50px 1fr; /* Avatar | Content */
       gap: 15px;
-      transition: 0.2s;
-      
-      /* SLIDE IN ANIMATION */
-      animation: slideIn 0.4s ease-out forwards;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      animation: fadeUp 0.5s ease forwards;
       opacity: 0;
-      transform: translateY(20px);
     }
 
-    @keyframes slideIn {
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .post-card:hover {
-      background: rgba(30, 41, 59, 0.8);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: scale(1.01);
+    /* AVATAR */
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    /* POST HEADER */
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
     }
 
     .post-username {
       font-weight: 700;
-      color: #60a5fa;
-      white-space: nowrap;
-      min-width: 100px;
-      text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
-      font-size: 17px;
-    }
-
-    .post-content {
-      flex-grow: 1;
-      color: #f1f5f9;
-      word-wrap: break-word;
+      color: white;
       font-size: 16px;
-      line-height: 1.6;
     }
 
     .post-date {
-      font-size: 13px;
       color: #64748b;
-      margin-left: 10px;
-      font-weight: 400;
+      font-size: 14px;
     }
 
-    /* TOAST NOTIFICATION STYLES */
+    /* POST CONTENT */
+    .post-content {
+      color: #cbd5e1;
+      font-size: 17px;
+      line-height: 1.5;
+      white-space: pre-wrap; /* Keeps line breaks */
+    }
+
+    /* TOASTS */
     #toast-container {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 1000;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      width: 90%;
+      max-width: 400px;
     }
 
     .toast {
-      background: rgba(30, 41, 59, 0.95);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
       color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      border-left: 4px solid #60a5fa;
+      padding: 16px 24px;
+      border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
       font-size: 14px;
-      animation: toastIn 0.3s ease-out;
-      min-width: 250px;
+      text-align: center;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     
-    .toast.error { border-left-color: #ef4444; }
-    .toast.success { border-left-color: #22c55e; }
+    .toast.success { border-color: #22c55e; color: #4ade80; }
+    .toast.error { border-color: #ef4444; color: #f87171; }
 
-    @keyframes toastIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
-    @media (min-width: 768px) { #app-container { padding: 40px; } }
+    @media (min-width: 768px) {
+      #app-container { padding: 40px 20px; }
+    }
   </style>
 </head>
 <body>
@@ -204,20 +222,23 @@
 
   <!-- LOGIN / SIGNUP -->
   <div id="auth">
-    <input id="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <br>
-    <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Login</button>
+    <div class="input-group">
+      <input id="email" placeholder="Email Address" />
+      <input id="password" type="password" placeholder="Password" />
+    </div>
+    <button id="signupBtn" class="btn">Sign Up</button>
+    <button id="loginBtn" class="btn btn-secondary">Login</button>
   </div>
 
   <!-- APP -->
   <div id="app" style="display:none;">
-    <input id="username" placeholder="Display Name" />
-    <textarea id="postContent" placeholder="What's on your mind?" rows="3"></textarea>
+    <div class="input-group">
+      <input id="username" placeholder="Display Name" />
+      <textarea id="postContent" placeholder="What's happening?" rows="3"></textarea>
+    </div>
     
-    <button id="postBtn">Post Message</button>
-    <button id="logoutBtn">Logout</button>
+    <button id="postBtn" class="btn">Post Now</button>
+    <button id="logoutBtn" class="btn btn-secondary">Logout</button>
   </div>
 
   <!-- POSTS -->
