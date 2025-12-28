@@ -15,9 +15,6 @@ const authDiv = document.getElementById('auth');
 const appDiv = document.getElementById('app');
 const postsList = document.getElementById('posts');
 
-// Variable to store the current user's ID (so we don't notify ourselves)
-let currentUserId = null;
-
 // Load saved username
 if(localStorage.getItem('wall_username')) {
   usernameInput.value = localStorage.getItem('wall_username');
@@ -28,14 +25,30 @@ document.getElementById('loginBtn').onclick = login;
 document.getElementById('logoutBtn').onclick = logout;
 document.getElementById('postBtn').onclick = addPost;
 
+/* TOAST NOTIFICATION FUNCTION */
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  
+  container.appendChild(toast);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
 /* AUTH FUNCTIONS */
 async function signup() {
   const { error } = await supabaseClient.auth.signUp({
     email: email.value,
     password: password.value
   });
-  if (error) alert("Signup error: " + error.message);
-  else alert("Signup successful! Check email.");
+  if (error) showToast(error.message, 'error');
+  else showToast("Success! Check your email.", 'success');
 }
 
 async function login() {
@@ -43,10 +56,10 @@ async function login() {
     email: email.value,
     password: password.value
   });
-  if (error) alert("Login error: " + error.message);
+  if (error) showToast(error.message, 'error');
   else {
     await checkUser();
-    enableNotifications(); // Ask for permission on login
+    showToast("Welcome back!", 'success');
   }
 }
 
@@ -58,46 +71,18 @@ async function logout() {
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   if (data && data.user) {
-    currentUserId = data.user.id; // Save ID
     authDiv.style.display = 'none';
     appDiv.style.display = 'block';
-  }
-}
-
-/* NOTIFICATION PERMISSION */
-function enableNotifications() {
-  if ("Notification" in window && Notification.permission !== "granted") {
-    Notification.requestPermission();
-  }
-}
-
-function sendNotification(post) {
-  // Check if we have permission
-  if (Notification.permission === "granted") {
-    const title = `@${post.username} says:`;
-    const body = post.content;
-    
-    // Create the popup
-    const notification = new Notification(title, {
-      body: body,
-      icon: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Infobox_info_icon.svg' // A generic icon
-    });
-
-    // Click notification to focus the tab
-    notification.onclick = function() {
-      window.focus();
-      notification.close();
-    };
   }
 }
 
 /* POST LOGIC */
 async function addPost() {
   const { data } = await supabaseClient.auth.getUser();
-  if (!data || !data.user) return alert("Please login first.");
+  if (!data || !data.user) return showToast("Please login first.", 'error');
 
   const username = usernameInput.value.trim();
-  if (!username) return alert("Please enter a display name.");
+  if (!username) return showToast("Please enter a display name.", 'error');
 
   localStorage.setItem('wall_username', username);
 
@@ -109,9 +94,10 @@ async function addPost() {
       user_id: data.user.id
     });
 
-  if (error) alert("Insert error: " + error.message);
+  if (error) showToast(error.message, 'error');
   else {
     postContent.value = '';
+    showToast("Message posted!", 'success');
     loadPosts();
   }
 }
@@ -148,17 +134,8 @@ async function loadPosts() {
 function subscribeToPosts() {
   supabaseClient
     .channel('public:posts')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
-      
-      const newPost = payload.new;
-
-      // 1. Update the UI list
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
       loadPosts();
-
-      // 2. Send Notification (BUT only if it's NOT me)
-      if (newPost.user_id !== currentUserId) {
-        sendNotification(newPost);
-      }
     })
     .subscribe();
 }
